@@ -28,7 +28,7 @@ func (r *UserRepositoryMysl) GetUserByName(name string) (*User, error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.Wrap(err, UserNotFound.Error())
+			return nil, errors.Wrap(err, ErrUserNotFound.Error())
 		}
 		return nil, errors.Wrap(err, "cannot get user")
 	}

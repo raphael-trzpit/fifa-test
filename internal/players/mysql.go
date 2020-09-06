@@ -32,12 +32,12 @@ func (r *PlayerRepositoryMysl) Delete(uuid uuid.UUID) error {
 }
 
 func (r *PlayerRepositoryMysl) GetByID(uuid uuid.UUID) (*Player, error) {
-	player :=  &Player{}
+	player := &Player{}
 	err := r.db.First(player, uuid).Error
 
 	if err != nil {
 		if errors.As(err, gorm.ErrRecordNotFound) {
-			return nil, errors.Wrap(err, PlayerNotFound.Error())
+			return nil, errors.Wrap(err, ErrPlayerNotFound.Error())
 		}
 		return nil, errors.Wrap(err, "cannot get player")
 	}

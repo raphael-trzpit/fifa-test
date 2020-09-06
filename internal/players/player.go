@@ -13,7 +13,7 @@ type Player struct {
 	LastName  string
 }
 
-var PlayerNotFound = errors.New("player not found")
+var ErrPlayerNotFound = errors.New("player not found")
 
 // PlayerRepository is a service which will handle the storage of the players.
 type PlayerRepository interface {

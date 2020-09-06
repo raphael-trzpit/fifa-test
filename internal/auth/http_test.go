@@ -38,7 +38,7 @@ func TestCreateUserHandler(t *testing.T) {
 
 	resp := w.Result()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
-	body ,_ := ioutil.ReadAll(resp.Body)
+	body, _ := ioutil.ReadAll(resp.Body)
 	assert.Equal(t, "thomas", gjson.Get(string(body), "Name").Str)
 	assert.True(t, gjson.Get(string(body), "TeamID").Exists())
 	repo.AssertExpectations(t)

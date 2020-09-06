@@ -55,7 +55,7 @@ func AuthMiddleware(repo UserRepository) func(http.Handler) http.Handler {
 
 			user, err := repo.GetUserByName(username)
 			if err != nil {
-				if errors.As(err, UserNotFound.Error()) {
+				if errors.As(err, ErrUserNotFound.Error()) {
 					http.Error(w, "not logged in", http.StatusUnauthorized)
 					return
 				}

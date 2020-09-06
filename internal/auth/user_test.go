@@ -8,7 +8,7 @@ import (
 
 func TestCheckPasswordHash(t *testing.T) {
 	tests := []struct {
-		name string
+		name                             string
 		initialPassword, checkedPassword string
 		match                            bool
 	}{

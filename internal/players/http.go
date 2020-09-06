@@ -33,7 +33,7 @@ func (h *Handle) GetAllPlayers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(players)
 }
 
-// GetAllPlayers will return one player by its id.
+// GetPlayerByID will return one player by its id.
 // If this player is not in the current user's team, it returns an error
 // It needs the use of httprouter and an id named param.
 func (h *Handle) GetPlayerByID(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func (h *Handle) GetPlayerByID(w http.ResponseWriter, r *http.Request) {
 	}
 	player, err := h.Repository.GetByID(playerUuid)
 	if err != nil {
-		if errors.As(err, PlayerNotFound) {
+		if errors.As(err, ErrPlayerNotFound) {
 			http.NotFound(w, r)
 			return
 		}
@@ -75,9 +75,9 @@ func (h *Handle) CreatePlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload  struct {
+	var payload struct {
 		FirstName string
-		LastName string
+		LastName  string
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -115,9 +115,9 @@ func (h *Handle) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload  struct {
+	var payload struct {
 		FirstName string
-		LastName string
+		LastName  string
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -126,7 +126,7 @@ func (h *Handle) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 
 	player, err := h.Repository.GetByID(playerUuid)
 	if err != nil {
-		if errors.As(err, PlayerNotFound) {
+		if errors.As(err, ErrPlayerNotFound) {
 			http.NotFound(w, r)
 			return
 		}
@@ -170,7 +170,7 @@ func (h *Handle) DeletePlayer(w http.ResponseWriter, r *http.Request) {
 
 	player, err := h.Repository.GetByID(playerUuid)
 	if err != nil {
-		if errors.As(err, PlayerNotFound) {
+		if errors.As(err, ErrPlayerNotFound) {
 			http.NotFound(w, r)
 			return
 		}

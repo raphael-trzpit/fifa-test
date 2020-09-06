@@ -18,7 +18,7 @@ type User struct {
 	TeamID       uuid.UUID
 }
 
-var UserNotFound = errors.New("user not found")
+var ErrUserNotFound = errors.New("user not found")
 
 // UserRepository is a service which will handle the storage of the users.
 type UserRepository interface {

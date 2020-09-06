@@ -6,7 +6,6 @@ type currentUserContextKeyType struct{}
 
 var currentUserContextKey currentUserContextKeyType
 
-
 func ContextWithCurrentUser(ctx context.Context, user *User) context.Context {
 	return context.WithValue(ctx, currentUserContextKey, user)
 }

@@ -21,3 +21,7 @@ Name|Description
 ----|--------
 HTTP_PORT|The port used by the http server
 DB_DSN|The database data source name (see reference [here](https://gorm.io/docs/connecting_to_the_database.html))
+
+## API Reference
+
+For the details of all available routes, you can check the [swagger file](https://github.com/raphael-trzpit/fifa-test/blob/master/docs/swagger.yaml)

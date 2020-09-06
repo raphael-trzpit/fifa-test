@@ -37,29 +37,8 @@ func (h *Handle) GetAllPlayers(w http.ResponseWriter, r *http.Request) {
 // If this player is not in the current user's team, it returns an error
 // It needs the use of httprouter and an id named param.
 func (h *Handle) GetPlayerByID(w http.ResponseWriter, r *http.Request) {
-	currentUser := auth.CurrentUserFromContext(r.Context())
-	if currentUser == nil {
-		http.Error(w, "no current user", http.StatusBadRequest)
-		return
-	}
-
-	playerUuid, err := uuid.FromString(httprouter.ParamsFromContext(r.Context()).ByName("id"))
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	player, err := h.Repository.GetByID(playerUuid)
-	if err != nil {
-		if errors.As(err, ErrPlayerNotFound) {
-			http.NotFound(w, r)
-			return
-		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if player.TeamID != currentUser.TeamID {
-		http.Error(w, "this player doesn't belong to your team", http.StatusForbidden)
+	player, ok := h.getPlayer(w, r)
+	if !ok {
 		return
 	}
 
@@ -103,18 +82,6 @@ func (h *Handle) CreatePlayer(w http.ResponseWriter, r *http.Request) {
 // If this player is not in the current user's team, it returns an error
 // It needs the use of httprouter and an id named param.
 func (h *Handle) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
-	currentUser := auth.CurrentUserFromContext(r.Context())
-	if currentUser == nil {
-		http.Error(w, "no current user", http.StatusBadRequest)
-		return
-	}
-
-	playerUuid, err := uuid.FromString(httprouter.ParamsFromContext(r.Context()).ByName("id"))
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
 	var payload struct {
 		FirstName string
 		LastName  string
@@ -124,19 +91,8 @@ func (h *Handle) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	player, err := h.Repository.GetByID(playerUuid)
-	if err != nil {
-		if errors.As(err, ErrPlayerNotFound) {
-			http.NotFound(w, r)
-			return
-		}
-
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if player.TeamID != currentUser.TeamID {
-		http.Error(w, "this player doesn't belong to your team", http.StatusForbidden)
+	player, ok := h.getPlayer(w, r)
+	if !ok {
 		return
 	}
 
@@ -156,31 +112,8 @@ func (h *Handle) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 // If this player is not in the current user's team, it returns an error
 // It needs the use of httprouter and an id named param.
 func (h *Handle) DeletePlayer(w http.ResponseWriter, r *http.Request) {
-	currentUser := auth.CurrentUserFromContext(r.Context())
-	if currentUser == nil {
-		http.Error(w, "no current user", http.StatusBadRequest)
-		return
-	}
-
-	playerUuid, err := uuid.FromString(httprouter.ParamsFromContext(r.Context()).ByName("id"))
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	player, err := h.Repository.GetByID(playerUuid)
-	if err != nil {
-		if errors.As(err, ErrPlayerNotFound) {
-			http.NotFound(w, r)
-			return
-		}
-
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if player.TeamID != currentUser.TeamID {
-		http.Error(w, "this player doesn't belong to your team", http.StatusForbidden)
+	player, ok := h.getPlayer(w, r)
+	if !ok {
 		return
 	}
 
@@ -190,4 +123,36 @@ func (h *Handle) DeletePlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handle) getPlayer(w http.ResponseWriter, r *http.Request) (*Player, bool) {
+	playerUuid, err := uuid.FromString(httprouter.ParamsFromContext(r.Context()).ByName("id"))
+	if err != nil {
+		http.NotFound(w, r)
+		return nil, false
+	}
+
+	player, err := h.Repository.GetByID(playerUuid)
+	if err != nil {
+		if errors.Is(err, ErrPlayerNotFound) {
+			http.NotFound(w, r)
+			return nil, false
+		}
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil, false
+	}
+
+	currentUser := auth.CurrentUserFromContext(r.Context())
+	if currentUser == nil {
+		http.Error(w, "no current user", http.StatusBadRequest)
+		return nil, false
+	}
+
+	if player.TeamID != currentUser.TeamID {
+		http.Error(w, "this player doesn't belong to your team", http.StatusForbidden)
+		return nil, false
+	}
+
+	return player, true
 }

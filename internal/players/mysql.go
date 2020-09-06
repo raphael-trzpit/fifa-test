@@ -36,7 +36,7 @@ func (r *PlayerRepositoryMysl) GetByID(uuid uuid.UUID) (*Player, error) {
 	err := r.db.First(player, uuid).Error
 
 	if err != nil {
-		if errors.As(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.Wrap(err, ErrPlayerNotFound.Error())
 		}
 		return nil, errors.Wrap(err, "cannot get player")

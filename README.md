@@ -25,3 +25,5 @@ DB_DSN|The database data source name (see reference [here](https://gorm.io/docs/
 ## API Reference
 
 For the details of all available routes, you can check the [swagger file](https://github.com/raphael-trzpit/fifa-test/blob/master/docs/swagger.yaml)
+
+Read it online (with server set locally on port 8080): [https://petstore.swagger.io/?url=https://raw.githubusercontent.com/raphael-trzpit/fifa-test/master/docs/swagger.yaml](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/raphael-trzpit/fifa-test/master/docs/swagger.yaml)

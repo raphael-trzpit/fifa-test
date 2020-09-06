@@ -1,0 +1,183 @@
+openapi: "3.0.0"
+
+info:
+  version: "0.1"
+  title: "Test FIFA API"
+
+servers:
+  - url: "http://localhost:8080/"
+
+tags:
+  - name: "users"
+    description: "Account management and authentication"
+  - name: "players"
+    description: "Players management"
+
+paths:
+  /users:
+    post:
+      tags:
+        - "users"
+      summary: "Create a user account"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                Name:
+                  type: "string"
+                Password:
+                  type: "string"
+              required:
+                - "Name"
+                - "Password"
+      responses:
+        201:
+          description: a user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: ""
+        500:
+          description: ""
+
+  /players:
+    get:
+      tags: ["players"]
+      summary: "Get all the players of the current user"
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: an array of players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+    post:
+      tags: ["players"]
+      summary: "Create a player"
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                FirstName:
+                  type: "string"
+                LastName:
+                  type: "string"
+              required:
+                - "FirstName"
+                - "LastName"
+      responses:
+        200:
+          description: the created aplayer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+  /players/{id}:
+    get:
+      tags: ["players"]
+      summary: "Get a player by its ID"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "string"
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: the player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+    post:
+      tags: ["players"]
+      summary: "Update a player"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                FirstName:
+                  type: "string"
+                LastName:
+                  type: "string"
+              required:
+                - "FirstName"
+                - "LastName"
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: the player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+    delete:
+      tags: ["players"]
+      summary: "Delete a player by its ID"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "string"
+      security:
+        - basicAuth: []
+      responses:
+        204:
+          description: empty response
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    User:
+      type: "object"
+      properties:
+        Name:
+          type: string
+        TeamID:
+          type: string
+          format: uuid
+    Player:
+      type: "object"
+      properties:
+        ID:
+          type: string
+          format: uuid
+        TeamID:
+          type: string
+          format: uuid
+        FirstName:
+          type: string
+        LastName:
+          type: string
+
